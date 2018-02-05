@@ -26,8 +26,9 @@ source.flowTo(series).flowTo(sink)
 source.received('Some random data to echo')
 
 source.lazyReceive('Some random data to echo')
-source.lazyReceive('niqqa')
+source.lazyReceive('Some more data')
 source.flow()
 
+#Synchronous tubes do not need a twisted reactor running
 #reactor.run()
 
