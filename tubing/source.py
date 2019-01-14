@@ -23,7 +23,7 @@ class Source(object):
           return self
 
       def received(self, item):
-
+          """Syncro error handling needs to be done"""
           if isinstance(self.sink, LoopingSink):
 
              while True:
