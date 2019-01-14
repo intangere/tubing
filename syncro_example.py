@@ -1,5 +1,5 @@
 from tubing.source  import Source
-from tubing.sink    import LoopingSink, Sink
+from tubing.sink    import Sink
 from tubing.tube    import tube
 from tubing.visual  import dump
 from tubing.tlogging import log

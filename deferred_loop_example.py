@@ -6,7 +6,7 @@ from twisted.internet.defer import Deferred
 from twisted.internet.defer import returnValue
 
 from tubing.source  import Source
-from tubing.sink    import Sink
+from tubing.sink    import LoopingSink
 from tubing.tube    import tube
 from tubing.visual  import dump
 from tubing.tlogging import log
@@ -36,11 +36,10 @@ class ParseTube(object):
       def received(self, data):
           return loads(data)['ip']
 
-class IPSink(Sink):
+class IPSink(LoopingSink):
     """Show the ip"""
     def received(self, ip):
         print('Your ip is: %s' % ip)
-        reactor.stop()
 
 def retry(error, source, _):
     log('Network Error', 'Treq request failed. Retrying..')
@@ -51,7 +50,7 @@ def main(reactor):
 
     source = Source()
     series = (DataTube(), ParseTube())
-    sink   = IPSink()
+    sink   = IPSink(source = source, delay = 5)
 
     source.flowFrom(RequestTube())
     source.flowTo(series).flowTo(sink)
