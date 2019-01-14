@@ -2,19 +2,18 @@ from twisted.internet.defer import Deferred
 
 from tubing.sink import Sink, LoopingSink
 
+import time
+
 class Source(object):
 
       def __init__(self):
           self.sink    = None
           self.data    = []
           self.tubeSeries = ()
+          self.sourceTube = None
 
-      def flowTo(self, series):
-          if isinstance(series, tuple):
-             self.tubeSeries = series
-          elif isinstance(series, Sink):
-             self.sink = series
-          return self
+      def flowFrom(self, tube):
+          self.sourceTube = tube
 
       def flowTo(self, series):
           if isinstance(series, tuple):
@@ -24,14 +23,27 @@ class Source(object):
           return self
 
       def received(self, item):
-          _data = item
 
-          for tube in self.tubeSeries:
-              _data = tube.received(_data)
-          self.sink.received(_data)
+          if isinstance(self.sink, LoopingSink):
 
-      def deferredReceived(self, item):
-          _data = item
+             while True:
+
+                _data = self.sourceTube.received(item)
+
+                for tube in self.tubeSeries:
+                    _data = tube.received(_data)
+
+                self.sink.received(_data)
+                time.sleep(self.sink.delay)
+          else:
+                _data = self.sourceTube.received(item)
+                for tube in self.tubeSeries:
+                    _data = tube.received(_data)
+
+                self.sink.received(_data)
+
+      def deferredReceived(self):
+          _data = self.sourceTube.received(None)
 
           for tube in self.tubeSeries:
               _data.addCallback(tube.received)

@@ -34,10 +34,9 @@ class Sink(object):
 
 class LoopingSink(Sink):
 
-      def __init__(self, source, deferred, delay):
+      def __init__(self, source, delay):
           self.source   = source
-          self.deferred = deferred
           self.delay    = delay
 
       def loop(self, _):
-          reactor.callLater(self.delay, self.source.deferredReceived, self.deferred)
+          reactor.callLater(self.delay, self.source.deferredReceived)
